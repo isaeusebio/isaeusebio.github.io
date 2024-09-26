@@ -1,16 +1,16 @@
 ---
 layout: page
 title: About me
-subtitle: Why you'd want to go on a date with me
+subtitle: Learn more about Isabel Eusebio
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+My name is Isabel Eusebio. I have the following qualities:
 
-- I rock a great mustache
-- I'm extremely loyal to my family
+- I am currently a student in the PEDA program at ASU
+- I'm trying to improve my R and GitHub skills
 
 What else do you need?
 
 ### My story
 
-To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](https://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+I am initially from Arizona and completed my B.A. in Global Studies at ASU. I currently work in Newark, New Jersey as an Operations Manager at a middle school. I started the PEDA program in August 2023 with the hope of gaining more skills within Program Evaluation.
