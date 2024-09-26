@@ -13,4 +13,6 @@ What else do you need?
 
 ### My story
 
-I am initially from Arizona and completed my B.A. in Global Studies at ASU. I currently work in Newark, New Jersey as an Operations Manager at a middle school. I started the PEDA program in August 2023 with the hope of gaining more skills within Program Evaluation.
+I am initially from Arizona and completed my B.A. in Global Studies at ASU. I currently work in Newark, New Jersey as an 
+Operations Manager at a middle school. I started the PEDA program in August 2023 with the hope of gaining more skills within 
+Program Evaluation.
