@@ -1,0 +1,222 @@
+---
+title: "Quanteda Package Code-Through"
+author: "Isabel Eusebio"
+date: "10/11/2024"
+output:
+  html_document:
+    theme: readable
+    df_print: paged
+    highlight: tango
+    toc: yes
+    toc_float: yes
+---
+
+```{r include = FALSE}
+
+# SET GLOBAL KNITR OPTIONS
+
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.width = 10, 
+                      fig.height = 8)
+
+
+
+# LOAD PACKAGES
+
+library(pander)
+library(kableExtra)
+```
+
+<br>
+<br>
+
+# Introduction
+
+This code through explores the various uses of the *quanteda* package in R. After first learning about this package in Lab 4, I thought it would be interesting to further explore this package and how it can be utilized for text/sentiment analysis. 
+
+<br>
+
+# Content Overview
+
+Specifically, we'll explain and demonstrate how to use the quanteda package for text and sentiment analysis. 
+
+<br>
+
+# Quanteda Package
+
+For this code through, the quanteda package is included, along with quanteda.textmodels, quanteda.textplots, and  quanteda.textstats which all previously were part of the original quanteda package.
+
+```{r}
+library(quanteda)
+library(quanteda.textmodels)
+library(quanteda.textplots)
+library(quanteda.textstats)
+library(readtext)
+```
+
+
+For this code through, we will compare text and sentiments from the 2010 State of the Union Address and 2016 State of the Union Address. Once the corpus has been created, they can be merged into a singular corpus in order to be analyzed together.
+
+```{r}
+#load data
+sotu10 <- readtext("https://raw.githubusercontent.com/datameister66/data/master/sou2010.txt")
+
+sotu16 <- readtext("https://raw.githubusercontent.com/datameister66/data/master/sou2016.txt")
+```
+
+
+```{r}
+#create corpus
+corp1 <- corpus(sotu10)
+corp2 <- corpus(sotu16)
+sotu_corp <- corp1 + corp2
+```
+We can use the tokens() function from quanteda to clean up the data to be analyzed by removing various unnecessary characters.
+
+
+```{r}
+#setting the remove values to TRUE removes the assigned characters, setting the values to FALSE, leaves the characters
+sotu_corp <- tokens( sotu_corp, remove_numbers = TRUE, remove_punct = FALSE, remove_separators = TRUE, remove_symbols = FALSE, )
+
+stopwords <- c("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now" )
+#Removing stopwords 
+sotu_corp <-  tokens_remove(sotu_corp, stopwords)
+        
+```
+
+
+## Analyzing the text
+
+There are various functions within the quanteda package that allows individuals to analyze a text. Below are some examples.
+
+<br>
+### Utility Functions
+
+There are various functions within the quanteda package that allow individuals to find the counts of objects.
+
+```{r}
+#ndoc counts the number of documents in a corpus
+ndoc(sotu_corp)
+#ntoken counts the number of tokens (total words)
+ntoken(sotu_corp)
+#ntype counts the number of types (total unique words)
+ntype(sotu_corp)
+```
+### index Function
+
+The index() funtion locates a pattern within the text. The to/from columns express where in the text the pattern appears.
+
+
+```{r}
+index(sotu_corp, pattern = "secure*")
+```
+
+###  kwic Function
+
+The  kwic (keywords in context) function allows individuals to determine the context in which a word occurs.
+```{r}
+#example of finding a keyword in context
+kwic(sotu_corp, pattern= "immigration")
+
+# adding the valuetype searches for (the default), regular expressions, or fixed expressions
+kwic(sotu_corp, pattern = "right", valuetype = "regex") |>
+    head()
+
+#example of finding a key phrase in context
+kwic(sotu_corp, pattern = phrase("United States")) |>
+    head()
+
+```
+
+<br>
+
+# Visualizing the text
+
+Quanteda has various additional packages that can be used alongside the original package in order to visualize the data. This includes quanteda.textplots, which is shown in example below of how wordclouds can be generated from the texts.
+
+## Creating a dfm (document-feature matrix)
+
+When performing statistical analysis, individuals must use the dfm() function to create a matrix that can be analyzed. 
+
+```{r}
+
+dfm_sotu10 <- corp1 |> 
+ tokens(remove_punct = TRUE) |>
+    tokens_remove(pattern = stopwords('english')) |>
+    dfm() |>
+    dfm_trim(min_termfreq = 10, verbose = FALSE)
+
+dfm_sotu16 <- corp2|> 
+ tokens(remove_punct = TRUE) |>
+    tokens_remove(pattern = stopwords('english')) |>
+    dfm() |>
+    dfm_trim(min_termfreq = 10, verbose = FALSE)
+
+print(dfm_sotu10)
+print(dfm_sotu16)
+```
+## Creating a Word Cloud
+You can use the frequency features to create a word cloud. You can also use a comparison cloud to compare word frequency of less than 8 documents.
+```{r}
+#singular word cloud
+set.seed(100)
+textplot_wordcloud(dfm_sotu10)
+```
+
+```{r}
+#create dfm
+dfm_sotu <- sotu_corp|> 
+ tokens(remove_punct = TRUE) |>
+    tokens_remove(pattern = stopwords('english')) |>
+    dfm() |>
+    dfm_trim(min_termfreq = 5, verbose = FALSE)
+#comparison cloud
+  textplot_wordcloud(dfm_sotu, comparison = TRUE)
+```
+
+
+<br>
+
+## Lexical Dispersion Plot
+
+A lexical dispersion plot can take a kwic object and visualize the occurences of a word or phrase throughout a text. This creates a visual, similar to an x-ray, where individuals can see where within a text a certain word or phrase occurs.
+
+```{r}
+kwic(sotu_corp, pattern = "american") |>
+    textplot_xray()
+```
+```{r}
+textplot_xray(
+     kwic(sotu_corp, pattern = "american"),
+     kwic(sotu_corp, pattern = "people"),
+     kwic(sotu_corp, pattern = "world")
+)
+```
+
+
+<br>
+## Frequency Plots
+In addition to the quanteda.textplots package, the quanteda.textstats package allows for further stats and visualizations to be created.
+
+```{r}
+library(ggplot2)
+#find frequency of top 25 most used words
+tstat_freq <- textstat_frequency(dfm_sotu10, n = 25)
+#plot frequency
+ggplot(tstat_freq, aes(x = frequency, y = reorder(feature, frequency)))+
+    geom_point() + 
+    labs(x = "Frequency", y = "Word")
+
+```
+
+<br> 
+<br>
+
+# Summary
+
+The quanteda package set is an excellent resource that can be utilized in analyzing and visualizing textual data. It encompasses a set of functions that users can pre-process, tokenize, and analyze text corpa. It can be extremely helpful to researchers and analysts who work with large text datasets, who may be analyzing multiple documents or sources. It provides easy and scalable methods the extract meaningful insights from textual data.
+
+<br>
+<br>
